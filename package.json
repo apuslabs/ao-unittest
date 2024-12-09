@@ -1,0 +1,25 @@
+{
+  "name": "ao-unittest",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "ao-unittest": "script/test.js"
+  },
+  "version": "0.0.1",
+  "main": "script/test.js",
+  "type": "module",
+  "scripts": {},
+  "keywords": [
+    "AO",
+    "UnitTest"
+  ],
+  "author": "jax@apus.network",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@permaweb/ao-loader": "^0.0.43",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0"
+  }
+}

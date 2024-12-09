@@ -1,0 +1,5 @@
+vendor
+.DS_Store
+.vscode
+node_modules
+.ao_unittest
