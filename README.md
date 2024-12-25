@@ -43,6 +43,5 @@ ao-unittest unit example_spec.lua
 
 ## Roadmap
 
-- Add support for --module option
 - Add full support for env config
 - Add support for e2e command

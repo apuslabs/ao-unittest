@@ -14,8 +14,8 @@ import fs from "fs-extra";
 import { join, isAbsolute, relative, dirname } from "path";
 import { fileURLToPath } from "url";
 import load from "./load.js";
-
-const BUILD_FOLDER = join(process.cwd(), ".ao_unittest");
+import { BUILD_FOLDER } from "./config.js";
+import { fetchModule, getModuleSync } from "./module.js";
 
 function isDirectory(path) {
   try {
@@ -55,12 +55,12 @@ program
     "./spec"
   )
   .option("--pid <pid>", "Specify process id, default: 1", "1")
-  .option("--from <from>", "Specify process owner, default: FOOBAR", "FOOBAR");
+  .option("--from <from>", "Specify process owner, default: FOOBAR", "FOOBAR")
+  .option("--module <moduleid>", "Specify module id, default: AOS", "");
 
 program.command("unit [testFile]").action((testFile) => {
   const { src, spec } = program.opts();
-  console.log(src, spec, testFile);
-  prepareBuildFolder(src, spec);
+  copyFiles(src, spec);
   if (!testFile) {
     const specs = scanSpec(spec);
     for (const file of specs) {
@@ -86,6 +86,7 @@ if (!process.execArgv.includes("--experimental-wasm-memory64")) {
     process.exit(code);
   });
 } else {
+  prepareBuildFolder();
   program.parse(process.argv);
 }
 
@@ -97,7 +98,10 @@ function scanSpec(folder) {
 
 async function runTestfile(path) {
   const [line] = load(importLua(path));
-  const wasmBinary = fs.readFileSync(join(__dirname, "sqlite.wasm"));
+  const options = program.opts();
+  // TODO：load before every command
+  await fetchModule(options.module);
+  const wasmBinary = getModuleSync(options.module);
   const handle = await AoLoader(wasmBinary, {
     format: "wasm64-unknown-emscripten-draft_2024_02_15",
     inputEncoding: "JSON-1",
@@ -114,14 +118,18 @@ async function runTestfile(path) {
   }
 }
 
-function prepareBuildFolder(src, spec) {
+function prepareBuildFolder() {
   fs.ensureDirSync(BUILD_FOLDER);
   fs.emptyDirSync(BUILD_FOLDER);
-  fs.copySync(src, BUILD_FOLDER);
+  fs.ensureDirSync(join(BUILD_FOLDER, "module"));
   fs.copySync(join(__dirname, "libs"), join(BUILD_FOLDER, "libs"));
-  fs.readdirSync(spec).forEach((file) => {
+}
+
+function copyFiles(src, dest) {
+  fs.copySync(src, BUILD_FOLDER);
+  fs.readdirSync(dest).forEach((file) => {
     if (file !== BUILD_FOLDER) {
-      fs.copySync(join(spec, file), join(BUILD_FOLDER, file));
+      fs.copySync(join(dest, file), join(BUILD_FOLDER, file));
     }
   });
 }
