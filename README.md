@@ -43,5 +43,5 @@ ao-unittest unit example_spec.lua
 
 ## Roadmap
 
-- Add full support for env config
-- Add support for e2e command
+- Rollup package
+- Support weavedrive

@@ -4,10 +4,10 @@
     "node": ">=22"
   },
   "bin": {
-    "ao-unittest": "script/test.js"
+    "ao-unittest": "scripts/cli.js"
   },
   "version": "0.0.1",
-  "main": "script/test.js",
+  "main": "scripts/index.js",
   "type": "module",
   "scripts": {},
   "keywords": [
